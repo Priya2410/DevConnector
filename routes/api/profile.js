@@ -180,4 +180,90 @@ Access of the route      :Private
         response.status(500).send('Server Error');
       }
     })
+
+/* @route PUT api/profile/experience
+Description of the route : Add profile experience 
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+
+    router.put(
+      '/experience',
+      [
+        auth,
+        [ // FOR EXPERIENCE TTILE,COMPANY AND FROM ARE ESSENTIAL
+          check('title', 'Title is required').not().isEmpty(),
+          check('company', 'Company is required').not().isEmpty(),
+          check('from', 'From date is required and needs to be from the past')
+            .not()
+            .isEmpty()
+        ]
+      ],
+      async (req, res) => {
+        const errors = validationResult(req);
+        //IF THERE ARE ERRORS DISPLAY THEM
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const {
+          title,
+          company,
+          location,
+          from,
+          to,
+          current,
+          description
+        } = req.body;
+    
+        // CREATING A EXPERIENCE OBJECT 
+        const newExp = {
+          title,
+          company,
+          location,
+          from,
+          to,
+          current,
+          description
+        };
+    
+        try {
+          const profile = await Profile.findOne({ user: req.user.id });
+    
+          profile.experience.unshift(newExp);
+    
+          await profile.save();
+    
+          res.json(profile);
+        } catch (err) {
+          console.error(err.message);
+          res.status(500).send('Server Error');
+        }
+      }
+    );
+
+/* @route DELETE api/profile/experience/:exp_id
+Description of the route : delete profile experience 
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+
+    router.delete('/experience/:exp_id',auth,async function(request,response){
+      try{
+      const profile = await Profile.findOne({ user: request.user.id });
+      //to get the index of the experience to be removed
+      const removeIndex=profile.experience.map(item => item.id).indexOf(request.params.exp_id);
+      profile.experience.splice(removeIndex,1);
+      await profile.save();
+      response.json(profile);
+      }
+      catch(err)
+      {
+        console.error(err.message);
+        response.status(500).send('Server Error');
+      }
+    })
+    
+
+
 module.exports=router;
