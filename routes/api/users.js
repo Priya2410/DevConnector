@@ -82,15 +82,8 @@ check('password','Please enter a password with length greater than six').isLengt
             ,(err,token)=>{ // Callback 
                 if(err)throw err
                 response.json({token}); //Send the token back to the client
-            })
-
-        
-
-
-        
+            })        
         // response.send('User is registered');
-
-
     }
     catch(err)
     {
