@@ -33,7 +33,7 @@ router.get('/me', auth, async (req, res) => {
   });
 
 
-  /* @route POST api/profile  .... to get my profile
+  /* @route POST api/profile 
 Description of the route : Create or update user profile
 Access of the route      :Private
 (the access of the route can be public or private in private we
@@ -123,5 +123,61 @@ router.post('/',
     }
   );
 
+/* @route GET api/profile 
+Description of the route :Get all profiles
+Access of the route      :Public 
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
 
+router.get('/',async function(request,response){
+  try {
+    // To get all the profiles with their name and avatar
+    const profiles=await Profile.find().populate('user',['name','avatar']);
+    response.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    response.status(500).send('Server Error');
+  }
+})
+
+/* @route GET api/profile 
+Description of the route :Get profile by user id
+Access of the route      :Public 
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+    router.get('/user/:user_id',async function(request,response){
+      try {
+        // To get all the profiles with their name and avatar
+        const profile=await Profile.findOne({user:request.params.user_id}).populate('user',['name','avatar']);
+        // If there is no profile return an error
+        if(!profile)
+        return response.status(400).json({msg:'There is no profile for the user'})
+        response.json(profile);
+      } catch (err) {
+        console.error(err.message);
+        if(err.kind == 'ObjectId'){
+          return response.status(400).json({msg:'There is no profile for the user'})
+        }
+        response.status(500).send('Server Error');
+      }
+    })
+
+/* @route DELETE api/profile 
+Description of the route :Delete profile ,user and posts
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+
+    router.delete('/',auth,async function(request,response){
+      try {
+        // to remove the profile
+        await Profile.findOneAndRemove({user:request.user.id});
+        //To remove user
+        await User.findOneAndRemove({_id:request.user.id});
+        response.json({msg:'Profile and user both are deleted'});
+      } catch (err) {
+        console.error(err.message);
+        response.status(500).send('Server Error');
+      }
+    })
 module.exports=router;
