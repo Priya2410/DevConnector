@@ -44,4 +44,97 @@ Access of the route      :Private
         }
       );
 
+/* @route  GET/posts
+Description of the route :To get all posts 
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+router.get('/',auth,async function(request,response){
+    try
+    {
+        // to sort posts based on the date and the latest one is seen first
+        const posts = await Post.find().sort({date: -1});
+        response.json(posts);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+})
+
+
+/* @route  GET/posts
+Description of the route :To get post by userid
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+    router.get('/:id',auth,async function(request,response){
+        try
+        {
+            // to sort posts based on the date and the latest one is seen first
+            const post = await Post.findById(request.params.id);
+            if(!post)
+            {
+                return response.status(404).json({msg:"Post Not found"});
+            }
+            response.json(post);
+        }
+        catch(err)
+        {
+            console.error(err.message);
+            if(err.kind==='ObjectId')
+            {
+                return response.status(404).json({msg:"Post Not found"});
+            }
+            res.status(500).send('Server Error');
+        }
+    })
+
+/* @route  DELETE/posts
+Description of the route :To delete a post
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+    router.delete('/:id',auth,async function(request,response){
+        try
+        {
+            // to sort posts based on the date and the latest one is seen first
+            const post = await Post.findById(request.params.id);
+            //Check if the user deleting the post is the same one as the logged in user
+            if(!post)
+            {
+                return response.status(404).json({msg:"Post Not found"});
+            }
+            if(post.user.toString() !== request.user.id)
+            {
+                return response.status(404).json({msg:"User Not authorized"});
+            }
+            await post.remove();
+            response.json({msg:'post removed'});
+        }
+        catch(err)
+        {
+            console.error(err.message);
+            if(err.kind==='ObjectId')
+            {
+                return response.status(404).json({msg:"Post Not found"});
+            }
+            res.status(500).send('Server Error');
+        }
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports=router;
