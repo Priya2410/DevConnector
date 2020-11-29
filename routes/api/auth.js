@@ -23,6 +23,7 @@ router.get('/', auth, async (req, res) => {
           res.status(500).send('Server Error');
         }
       });
+
 router.post('/',[
         /* is email checks if its a valid email address */
         /* the . after check is the for the rule we want to validate like 
