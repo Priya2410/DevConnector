@@ -124,10 +124,62 @@ Access of the route      :Private
         }
     })
 
+/* @route  PUT/like/:id
+Description of the route :Lika a post
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+router.put('/like/:id',auth,async function(request,response){
+    try 
+    {
+        const post=await Post.findById(request.params.id);
+        //Check if the post has already been liked by the user
+        //Here like is a array so we filter the array and grab the likes done by the user if its >0 then the user has already likesd so we return an error
+        if(post.likes.filter(like => like.user.toString()===request.user.id).length>0)
+        {
+            return response.status(400).json({msg:'Post already liked'});
+        }
+        //If the user hasnt liked then we add the like
+        post.likes.unshift({user:request.user.id});
+        await post.save();
+        response.json(post.likes);
+    }
+    catch (err)
+    {
+        console.error(err.message);
+        res.status(500).send('Server Error'); 
+    }
+})
 
-
-
-
+/* @route  PUT/unlike/:id
+Description of the route :Lika a post
+Access of the route      :Private
+(the access of the route can be public or private in private we
+    send the token along like for authentication) */
+    router.put('/unlike/:id',auth,async function(request,response){
+        try 
+        {
+            const post=await Post.findById(request.params.id);
+            //Check if the post has already been liked by the user
+            //Here like is a array so we filter the array and grab the likes done by the user if its == 0 then the user hasnt been liked to remove the like
+            if(post.likes.filter(like => like.user.toString()===request.user.id).length == 0)
+            {
+                return response.status(400).json({msg:'Post is not been liked'});
+            }
+            //If the user hasnt liked then we add the like
+            //To get the remove index 
+            //to get the current like to be removed
+            const removeIndex=post.likes.map(like=>like.user.toString().indexOf(request.user.id));
+            post.likes.splice(removeIndex,1);
+            await post.save();
+            response.json(post.likes);
+        }
+        catch (err)
+        {
+            console.error(err.message);
+            res.status(500).send('Server Error'); 
+        }
+    })
 
 
 
