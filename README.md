@@ -8,3 +8,9 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
     <img src="client/login.png" />
     <br/>
  </p>
+ 
+ <h2><i> DashBoard </i></h2><br/>
+ <p align='center'>
+     <img src="client/dash.png"/>
+     <br/>
+ </p>
