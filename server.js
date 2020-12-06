@@ -8,9 +8,9 @@ const PORT=process.env.PORT; //Looks for an environment variable PORT when deplo
 /*initializing middleware */
 app.use(express.json({extended:false}))
 
-app.get('/',function(request,response){
-    response.send('API Running')
-})
+// app.get('/',function(request,response){
+//     response.send('API Running')
+// })
 /* defining routes */
 // when the user accesses this uri then we will use this route
 app.use('/api/users', require('./routes/api/users'));
