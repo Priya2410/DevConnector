@@ -1,0 +1,6 @@
+
+{
+    "mongoURI":"mongodb+srv://priya123:priya123@devconnector.kft8g.mongodb.net/<dbname>?retryWrites=true&w=majority",
+    "jwtSecret":"mysecrettoken",
+    "githubToken":"5481c681e93aff5b1345458938f1953ae675a9d4"
+}
