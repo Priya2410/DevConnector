@@ -7,7 +7,8 @@ const User=require('../../models/User')
 const {check,validationResult}=require('express-validator')
 const request=require('request');
 const config=require('config');
-const axios=require('axios')
+const axios=require('axios');
+const Post=require('../../models/Post')
 
 /* @route GET api/profile/me  .... to get my profile
 Description of the route : Get current users profile
@@ -172,6 +173,7 @@ Access of the route      :Private
 
     router.delete('/',auth,async function(request,response){
       try {
+        await Post.deleteMany({ user:req.user.id});
         // to remove the profile
         await Profile.findOneAndRemove({user:request.user.id});
         //To remove user
